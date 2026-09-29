@@ -14,7 +14,3 @@ SOPT 39기 서버 파트 과제 저장소입니다.
 - 🎓 홍익대학교 컴퓨터공학전공
 
 - 📫 E=mail : kkmin801@gmail.com
-
-## 📊 GitHub Stats
-
-![GitHub stats](https://github-readme-stats.vercel.app/api?username=kmin-k&show_icons=true)
