@@ -1,15 +1,12 @@
 package org.sopt;
 
-import org.sopt.controller.PostController;
-import org.sopt.repository.PostRepository;
-import org.sopt.service.PostService;
-import org.sopt.view.PostView;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@SpringBootApplication
 public class Main {
+
     public static void main(String[] args) {
-        PostRepository postRepository = new PostRepository();
-        PostService postService = new PostService(postRepository);
-        PostController postController = new PostController(postService, new PostView());
-        postController.run();
+        SpringApplication.run(Main.class, args);
     }
 }
