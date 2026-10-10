@@ -1,12 +1,15 @@
 package org.sopt.service;
 
-import org.sopt.domain.Category;
 import org.sopt.domain.Post;
+import org.sopt.dto.CreatePostRequest;
+import org.sopt.dto.UpdatePostRequest;
 import org.sopt.exception.PostNotFoundException;
 import org.sopt.repository.PostRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class PostService {
     private final PostRepository postRepository;
 
@@ -14,30 +17,34 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
-    public void createPost(String title, String content, Category category, List<String> tags, String author) {
-        postRepository.save(new Post(title, content, category, tags, author));
+    public Post createPost(CreatePostRequest request) {
+        Post post = new Post(request.title(), request.content(), request.category(), request.tags(), request.author());
+        return postRepository.save(post);
     }
 
     public List<Post> getAllPosts() {
         return postRepository.findAll();
     }
 
-    public Post getPost(int index) {
-        Post post = findPost(index);
+    public Post getPostAndIncreaseViewCount(Long id) {
+        Post post = findPost(id);
         post.increaseViewCount();
         return post;
     }
 
-    public void updatePost(int index, String title, String content, Category category, List<String> tags) {
-        findPost(index).update(title, content, category, tags);
+    public Post updatePost(Long id, UpdatePostRequest request) {
+        Post post = findPost(id);
+        post.update(request.title(), request.content(), request.category(), request.tags());
+        return post;
     }
 
-    public void deletePost(int index) {
-        postRepository.delete(findPost(index));
+    public void deletePost(Long id) {
+        findPost(id);
+        postRepository.delete(id);
     }
 
-    private Post findPost(int index) {
-        return postRepository.findByIndex(index)
+    private Post findPost(Long id) {
+        return postRepository.findById(id)
                 .orElseThrow(() -> new PostNotFoundException("존재하지 않는 게시글입니다."));
     }
 }
