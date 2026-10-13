@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class Post {
+    private Long id;
     private String title;
     private String content;
     private Category category;
@@ -37,11 +38,17 @@ public class Post {
         this.viewCount++;
     }
 
+    public void assignId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() { return id; }
+
     private void validate(String title, String content) {
-        if (title.isBlank()) {
+        if (title == null || title.isBlank()) {
             throw new InvalidInputException("제목을 입력해주세요.");
         }
-        if (content.isBlank()) {
+        if (content == null || content.isBlank()) {
             throw new InvalidInputException("본문을 입력해주세요.");
         }
     }
