@@ -1,6 +1,7 @@
 package org.sopt.domain;
 
-import org.sopt.exception.InvalidInputException;
+import org.sopt.global.exception.ErrorCode;
+import org.sopt.global.exception.BusinessException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,10 +47,10 @@ public class Post {
 
     private void validate(String title, String content) {
         if (title == null || title.isBlank()) {
-            throw new InvalidInputException("제목을 입력해주세요.");
+            throw new BusinessException(ErrorCode.EMPTY_TITLE);
         }
         if (content == null || content.isBlank()) {
-            throw new InvalidInputException("본문을 입력해주세요.");
+            throw new BusinessException(ErrorCode.EMPTY_CONTENT);
         }
     }
 

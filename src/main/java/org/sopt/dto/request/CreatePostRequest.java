@@ -1,13 +1,14 @@
-package org.sopt.dto;
+package org.sopt.dto.request;
 
 import org.sopt.domain.Category;
 
 import java.util.List;
 
-public record UpdatePostRequest(
+public record CreatePostRequest(
         String title,
         String content,
         Category category,
-        List<String> tags
+        List<String> tags,
+        String author
 ) {
 }
