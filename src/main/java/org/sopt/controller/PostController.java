@@ -2,6 +2,7 @@ package org.sopt.controller;
 
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
+import org.sopt.dto.response.PostPageResponse;
 import org.sopt.dto.response.PostResponse;
 import org.sopt.global.response.ApiResponse;
 import org.sopt.global.response.SuccessCode;
@@ -26,8 +27,10 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<PostResponse>>> getAllPosts() {
-        return toResponse(SuccessCode.POST_LIST_FOUND, postService.getAllPosts());
+    public ResponseEntity<ApiResponse<PostPageResponse>> getPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return toResponse(SuccessCode.POST_LIST_FOUND, postService.getPosts(page, size));
     }
 
     @GetMapping("/{postId}")

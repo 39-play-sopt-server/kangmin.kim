@@ -9,6 +9,7 @@ public enum ErrorCode {
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."),
     NOT_FOUND_PATH(HttpStatus.NOT_FOUND, "존재하지 않는 경로입니다."),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "지원하지 않는 HTTP 메서드입니다."),
+    INVALID_PAGE(HttpStatus.BAD_REQUEST, "page는 0 이상, size는 1~100 사이여야 합니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.");
 
     private final HttpStatus status;

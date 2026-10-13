@@ -3,6 +3,7 @@ package org.sopt.service;
 import org.sopt.domain.Post;
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
+import org.sopt.dto.response.PostPageResponse;
 import org.sopt.dto.response.PostResponse;
 import org.sopt.global.exception.BusinessException;
 import org.sopt.global.exception.ErrorCode;
@@ -24,10 +25,14 @@ public class PostService {
         return PostResponse.from(postRepository.save(post));
     }
 
-    public List<PostResponse> getAllPosts() {
-        return postRepository.findAll().stream()
+    public PostPageResponse getPosts(int page, int size) {
+        if (page < 0 || size < 1 || size > 100) {
+            throw new BusinessException(ErrorCode.INVALID_PAGE);
+        }
+        List<PostResponse> posts = postRepository.findPage(page, size).stream()
                 .map(PostResponse::from)
                 .toList();
+        return PostPageResponse.of(posts, page, size, postRepository.count());
     }
 
     public PostResponse getPostAndIncreaseViewCount(Long id) {
