@@ -1,9 +1,12 @@
 package org.sopt.service;
 
 import org.sopt.domain.Post;
-import org.sopt.dto.CreatePostRequest;
-import org.sopt.dto.UpdatePostRequest;
-import org.sopt.exception.PostNotFoundException;
+import org.sopt.dto.request.CreatePostRequest;
+import org.sopt.dto.request.UpdatePostRequest;
+import org.sopt.dto.response.PostPageResponse;
+import org.sopt.dto.response.PostResponse;
+import org.sopt.global.exception.BusinessException;
+import org.sopt.global.exception.ErrorCode;
 import org.sopt.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,25 +20,31 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
-    public Post createPost(CreatePostRequest request) {
+    public PostResponse createPost(CreatePostRequest request) {
         Post post = new Post(request.title(), request.content(), request.category(), request.tags(), request.author());
-        return postRepository.save(post);
+        return PostResponse.from(postRepository.save(post));
     }
 
-    public List<Post> getAllPosts() {
-        return postRepository.findAll();
+    public PostPageResponse getPosts(int page, int size) {
+        if (page < 0 || size < 1 || size > 100) {
+            throw new BusinessException(ErrorCode.INVALID_PAGE);
+        }
+        List<PostResponse> posts = postRepository.findPage(page, size).stream()
+                .map(PostResponse::from)
+                .toList();
+        return PostPageResponse.of(posts, page, size, postRepository.count());
     }
 
-    public Post getPostAndIncreaseViewCount(Long id) {
+    public PostResponse getPostAndIncreaseViewCount(Long id) {
         Post post = findPost(id);
         post.increaseViewCount();
-        return post;
+        return PostResponse.from(post);
     }
 
-    public Post updatePost(Long id, UpdatePostRequest request) {
+    public PostResponse updatePost(Long id, UpdatePostRequest request) {
         Post post = findPost(id);
         post.update(request.title(), request.content(), request.category(), request.tags());
-        return post;
+        return PostResponse.from(post);
     }
 
     public void deletePost(Long id) {
@@ -45,6 +54,6 @@ public class PostService {
 
     private Post findPost(Long id) {
         return postRepository.findById(id)
-                .orElseThrow(() -> new PostNotFoundException("존재하지 않는 게시글입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
     }
 }

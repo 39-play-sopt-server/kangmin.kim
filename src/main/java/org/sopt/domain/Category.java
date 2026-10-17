@@ -1,7 +1,5 @@
 package org.sopt.domain;
 
-import org.sopt.exception.InvalidInputException;
-
 public enum Category {
     DAILY("일상"),
     REVIEW("리뷰"),
@@ -17,13 +15,5 @@ public enum Category {
 
     public String getDisplayName() {
         return displayName;
-    }
-
-    public static Category fromNumber(int number) {
-        Category[] categories = values();
-        if (number < 1 || number > categories.length) {
-            throw new InvalidInputException("존재하지 않는 카테고리입니다.");
-        }
-        return categories[number - 1];
     }
 }

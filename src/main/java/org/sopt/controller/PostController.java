@@ -1,10 +1,12 @@
 package org.sopt.controller;
 
-import org.sopt.domain.Post;
-import org.sopt.dto.CreatePostRequest;
-import org.sopt.dto.UpdatePostRequest;
+import org.sopt.dto.request.CreatePostRequest;
+import org.sopt.dto.request.UpdatePostRequest;
+import org.sopt.dto.response.PostPageResponse;
+import org.sopt.dto.response.PostResponse;
+import org.sopt.global.response.ApiResponse;
+import org.sopt.global.response.SuccessCode;
 import org.sopt.service.PostService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,31 +22,37 @@ public class PostController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Post createPost(@RequestBody CreatePostRequest request) {
-        return postService.createPost(request);
+    public ResponseEntity<ApiResponse<PostResponse>> createPost(@RequestBody CreatePostRequest request) {
+        return toResponse(SuccessCode.POST_CREATED, postService.createPost(request));
     }
 
     @GetMapping
-    public List<Post> getAllPosts() {
-        return postService.getAllPosts();
+    public ResponseEntity<ApiResponse<PostPageResponse>> getPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return toResponse(SuccessCode.POST_LIST_FOUND, postService.getPosts(page, size));
     }
 
     @GetMapping("/{postId}")
-    public Post getPost(@PathVariable Long postId) {
-        return postService.getPostAndIncreaseViewCount(postId);
+    public ResponseEntity<ApiResponse<PostResponse>> getPost(@PathVariable Long postId) {
+        return toResponse(SuccessCode.POST_FOUND, postService.getPostAndIncreaseViewCount(postId));
     }
 
     @PutMapping("/{postId}")
-    public Post updatePost(@PathVariable Long postId, @RequestBody UpdatePostRequest request) {
-        return postService.updatePost(postId, request);
+    public ResponseEntity<ApiResponse<PostResponse>> updatePost(@PathVariable Long postId,
+                                                                @RequestBody UpdatePostRequest request) {
+        return toResponse(SuccessCode.POST_UPDATED, postService.updatePost(postId, request));
     }
 
     @DeleteMapping("/{postId}")
-    public ResponseEntity<String> deletePost(@PathVariable Long postId) {
+    public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable Long postId) {
         postService.deletePost(postId);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("삭제 완료");
+        return ResponseEntity.status(SuccessCode.POST_DELETED.getStatus())
+                .body(ApiResponse.success(SuccessCode.POST_DELETED));
+    }
+
+    private <T> ResponseEntity<ApiResponse<T>> toResponse(SuccessCode code, T data) {
+        return ResponseEntity.status(code.getStatus())
+                .body(ApiResponse.success(code, data));
     }
 }

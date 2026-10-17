@@ -1,9 +1,11 @@
 package org.sopt.domain;
 
-import org.sopt.exception.InvalidInputException;
+import org.sopt.global.exception.ErrorCode;
+import org.sopt.global.exception.BusinessException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Post {
     private Long id;
@@ -13,7 +15,7 @@ public class Post {
     private List<String> tags;
     private final String author;
     private final LocalDateTime createdAt;
-    private int viewCount;
+    private final AtomicInteger viewCount = new AtomicInteger();
 
     public Post(String title, String content, Category category, List<String> tags, String author) {
         validate(title, content);
@@ -23,7 +25,6 @@ public class Post {
         this.tags = tags;
         this.author = author;
         this.createdAt = LocalDateTime.now();
-        this.viewCount = 0;
     }
 
     public void update(String title, String content, Category category, List<String> tags) {
@@ -35,7 +36,7 @@ public class Post {
     }
 
     public void increaseViewCount() {
-        this.viewCount++;
+        viewCount.incrementAndGet();
     }
 
     public void assignId(Long id) {
@@ -46,10 +47,10 @@ public class Post {
 
     private void validate(String title, String content) {
         if (title == null || title.isBlank()) {
-            throw new InvalidInputException("제목을 입력해주세요.");
+            throw new BusinessException(ErrorCode.EMPTY_TITLE);
         }
         if (content == null || content.isBlank()) {
-            throw new InvalidInputException("본문을 입력해주세요.");
+            throw new BusinessException(ErrorCode.EMPTY_CONTENT);
         }
     }
 
@@ -59,5 +60,5 @@ public class Post {
     public List<String> getTags() { return tags; }
     public String getAuthor() { return author; }
     public LocalDateTime getCreatedAt() { return createdAt; }
-    public int getViewCount() { return viewCount; }
+    public int getViewCount() { return viewCount.get(); }
 }
