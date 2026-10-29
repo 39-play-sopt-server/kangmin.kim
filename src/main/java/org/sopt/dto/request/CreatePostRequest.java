@@ -9,6 +9,6 @@ public record CreatePostRequest(
         String content,
         Category category,
         List<String> tags,
-        String author
+        Long memberId
 ) {
 }
