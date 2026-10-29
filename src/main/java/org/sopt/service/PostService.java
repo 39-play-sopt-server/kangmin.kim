@@ -1,5 +1,6 @@
 package org.sopt.service;
 
+import jakarta.transaction.Transactional;
 import org.sopt.domain.Post;
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
@@ -8,6 +9,9 @@ import org.sopt.dto.response.PostResponse;
 import org.sopt.global.exception.BusinessException;
 import org.sopt.global.exception.ErrorCode;
 import org.sopt.repository.PostRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,18 +33,19 @@ public class PostService {
         if (page < 0 || size < 1 || size > 100) {
             throw new BusinessException(ErrorCode.INVALID_PAGE);
         }
-        List<PostResponse> posts = postRepository.findPage(page, size).stream()
+        Page<Post> postPage = postRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+        List<PostResponse> posts = postPage.getContent().stream()
                 .map(PostResponse::from)
                 .toList();
-        return PostPageResponse.of(posts, page, size, postRepository.count());
+        return PostPageResponse.of(posts, page, size, postPage.getTotalElements());
     }
-
+    @Transactional
     public PostResponse getPostAndIncreaseViewCount(Long id) {
         Post post = findPost(id);
         post.increaseViewCount();
         return PostResponse.from(post);
     }
-
+    @Transactional
     public PostResponse updatePost(Long id, UpdatePostRequest request) {
         Post post = findPost(id);
         post.update(request.title(), request.content(), request.category(), request.tags());
@@ -48,8 +53,8 @@ public class PostService {
     }
 
     public void deletePost(Long id) {
-        findPost(id);
-        postRepository.delete(id);
+        Post post = findPost(id);
+        postRepository.delete(post);
     }
 
     private Post findPost(Long id) {
