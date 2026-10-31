@@ -1,6 +1,8 @@
 package org.sopt.service;
 
-import jakarta.transaction.Transactional;
+import org.sopt.domain.Member;
+import org.sopt.repository.MemberRepository;
+import org.springframework.transaction.annotation.Transactional;
 import org.sopt.domain.Post;
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
@@ -19,13 +21,17 @@ import java.util.List;
 @Service
 public class PostService {
     private final PostRepository postRepository;
+    private final MemberRepository memberRepository;
 
-    public PostService(PostRepository postRepository) {
+    public PostService(PostRepository postRepository, MemberRepository memberRepository) {
         this.postRepository = postRepository;
+        this.memberRepository = memberRepository;
     }
 
     public PostResponse createPost(CreatePostRequest request) {
-        Post post = new Post(request.title(), request.content(), request.category(), request.tags(), request.author());
+        Member member = memberRepository.findById(request.memberId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+        Post post = new Post(request.title(), request.content(), request.category(), request.tags(), member);
         return PostResponse.from(postRepository.save(post));
     }
 
@@ -33,7 +39,7 @@ public class PostService {
         if (page < 0 || size < 1 || size > 100) {
             throw new BusinessException(ErrorCode.INVALID_PAGE);
         }
-        Page<Post> postPage = postRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+        Page<Post> postPage = postRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
         List<PostResponse> posts = postPage.getContent().stream()
                 .map(PostResponse::from)
                 .toList();
