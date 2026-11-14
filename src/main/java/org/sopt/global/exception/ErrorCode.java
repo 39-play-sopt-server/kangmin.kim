@@ -9,6 +9,8 @@ public enum ErrorCode {
     EMPTY_CATEGORY(HttpStatus.BAD_REQUEST, "카테고리를 입력해주세요."),
     EMPTY_NAME(HttpStatus.BAD_REQUEST, "이름을 입력해주세요."),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),
+    DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 가입된 이메일입니다."),
+    INVALID_LOGIN(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."),
     NOT_FOUND_PATH(HttpStatus.NOT_FOUND, "존재하지 않는 경로입니다."),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "지원하지 않는 HTTP 메서드입니다."),

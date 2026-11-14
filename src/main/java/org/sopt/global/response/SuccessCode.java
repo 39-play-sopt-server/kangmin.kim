@@ -9,7 +9,9 @@ public enum SuccessCode {
     POST_UPDATED(HttpStatus.OK, "게시글이 수정되었습니다."),
     POST_DELETED(HttpStatus.OK, "게시글이 삭제되었습니다."),
     MEMBER_CREATED(HttpStatus.CREATED, "회원이 생성되었습니다."),
-    MEMBER_DELETED(HttpStatus.OK, "회원이 삭제되었습니다.");
+    MEMBER_DELETED(HttpStatus.OK, "회원이 삭제되었습니다."),
+    SIGNUP_SUCCESS(HttpStatus.CREATED, "회원가입에 성공했습니다."),
+    LOGIN_SUCCESS(HttpStatus.OK, "로그인에 성공했습니다.");
 
     private final HttpStatus status;
     private final String message;
