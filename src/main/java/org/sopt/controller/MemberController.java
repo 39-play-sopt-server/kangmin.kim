@@ -7,6 +7,7 @@ import org.sopt.global.response.SuccessCode;
 import org.sopt.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @RestController
 @RequestMapping("/api/v1/members")
@@ -28,5 +29,11 @@ public class MemberController {
         memberService.deleteMember(memberId);
         return ResponseEntity.status(SuccessCode.MEMBER_DELETED.getStatus())
                 .body(ApiResponse.success(SuccessCode.MEMBER_DELETED));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<Long>> me(@AuthenticationPrincipal Long memberId) {
+        return ResponseEntity.status(SuccessCode.MEMBER_FOUND.getStatus())
+                .body(ApiResponse.success(SuccessCode.MEMBER_FOUND, memberId));
     }
 }

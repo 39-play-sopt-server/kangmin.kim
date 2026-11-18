@@ -10,6 +10,12 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
+
     @Column(nullable = false)
     private String name;
 
@@ -20,6 +26,13 @@ public class Member extends BaseEntity {
         this.name = name;
     }
 
+    public Member(String email, String password, String name) {
+        validate(name);
+        this.email = email;
+        this.password = password;
+        this.name = name;
+    }
+
     private void validate(String name) {
         if (name == null || name.isBlank()) {
             throw new BusinessException(ErrorCode.EMPTY_NAME);
@@ -27,5 +40,7 @@ public class Member extends BaseEntity {
     }
 
     public Long getId() { return id; }
+    public String getEmail() { return email; }
+    public String getPassword() { return password; }
     public String getName() { return name; }
 }
