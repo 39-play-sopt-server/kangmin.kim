@@ -21,11 +21,6 @@ public class Member extends BaseEntity {
 
     protected Member() {}
 
-    public Member(String name) {
-        validate(name);
-        this.name = name;
-    }
-
     public Member(String email, String password, String name) {
         validate(name);
         this.email = email;

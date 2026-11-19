@@ -28,8 +28,8 @@ public class PostService {
         this.memberRepository = memberRepository;
     }
 
-    public PostResponse createPost(CreatePostRequest request) {
-        Member member = memberRepository.findById(request.memberId())
+    public PostResponse createPost(Long memberId, CreatePostRequest request) {
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
         Post post = new Post(request.title(), request.content(), request.category(), request.tags(), member);
         return PostResponse.from(postRepository.save(post));

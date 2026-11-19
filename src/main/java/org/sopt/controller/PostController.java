@@ -9,6 +9,7 @@ import org.sopt.global.response.SuccessCode;
 import org.sopt.service.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 
@@ -22,8 +23,9 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<PostResponse>> createPost(@RequestBody CreatePostRequest request) {
-        return toResponse(SuccessCode.POST_CREATED, postService.createPost(request));
+    public ResponseEntity<ApiResponse<PostResponse>> createPost(@AuthenticationPrincipal Long memberId,
+                                                                @RequestBody CreatePostRequest request) {
+        return toResponse(SuccessCode.POST_CREATED, postService.createPost(memberId, request));
     }
 
     @GetMapping

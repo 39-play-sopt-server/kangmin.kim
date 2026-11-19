@@ -2,8 +2,6 @@ package org.sopt.service;
 
 import lombok.RequiredArgsConstructor;
 import org.sopt.domain.Member;
-import org.sopt.dto.request.CreateMemberRequest;
-import org.sopt.dto.response.MemberResponse;
 import org.sopt.global.exception.BusinessException;
 import org.sopt.global.exception.ErrorCode;
 import org.sopt.repository.MemberRepository;
@@ -18,11 +16,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-
-    public MemberResponse createMember(CreateMemberRequest request) {
-        Member member = new Member(request.name());
-        return MemberResponse.from(memberRepository.save(member));
-    }
 
     @Transactional
     public void deleteMember(Long memberId) {
