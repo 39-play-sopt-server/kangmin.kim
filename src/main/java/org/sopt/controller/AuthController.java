@@ -11,6 +11,7 @@ import org.sopt.service.AuthService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
@@ -46,18 +47,31 @@ public class AuthController {
         return toTokenResponse(SuccessCode.TOKEN_REISSUED, tokens);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal Long memberId) {
+        authService.logout(memberId);
+        return ResponseEntity.status(SuccessCode.LOGOUT_SUCCESS.getStatus())
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie("", Duration.ZERO).toString())
+                .body(ApiResponse.success(SuccessCode.LOGOUT_SUCCESS));
+    }
+
     private ResponseEntity<ApiResponse<Void>> toTokenResponse(SuccessCode code, TokenResponse tokens) {
-        ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE, tokens.refreshToken())
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("Strict")
-                .path("/api/v1/auth")
-                .maxAge(Duration.ofMillis(jwtProperties.refreshTokenExpiration()))
-                .build();
+        ResponseCookie cookie = refreshTokenCookie(
+                tokens.refreshToken(), Duration.ofMillis(jwtProperties.refreshTokenExpiration()));
 
         return ResponseEntity.status(code.getStatus())
                 .header(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + tokens.accessToken())
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(ApiResponse.success(code));
+    }
+
+    private ResponseCookie refreshTokenCookie(String value, Duration maxAge) {
+        return ResponseCookie.from(REFRESH_TOKEN_COOKIE, value)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/api/v1/auth")
+                .maxAge(maxAge)
+                .build();
     }
 }

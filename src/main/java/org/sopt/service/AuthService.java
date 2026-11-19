@@ -59,7 +59,13 @@ public class AuthService {
             throw new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
+
         return issueTokens(memberId);
+    }
+
+    @Transactional
+    public void logout(Long memberId) {
+        refreshTokenRepository.deleteByMemberId(memberId);
     }
 
     private TokenResponse issueTokens(Long memberId) {
