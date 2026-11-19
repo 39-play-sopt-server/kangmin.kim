@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ public class JwtProvider {
         Date now = new Date();
 
         return Jwts.builder()
+                .id(UUID.randomUUID().toString())
                 .subject(String.valueOf(memberId))
                 .claim(TokenType.CLAIM_NAME, type.name())
                 .issuedAt(now)

@@ -59,7 +59,6 @@ public class AuthService {
             throw new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
-
         return issueTokens(memberId);
     }
 
