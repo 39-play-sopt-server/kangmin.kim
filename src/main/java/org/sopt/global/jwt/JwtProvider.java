@@ -1,47 +1,38 @@
 package org.sopt.global.jwt;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
+@RequiredArgsConstructor
 public class JwtProvider {
 
     private final SecretKey secretKey;
-    private final long accessTokenExpiration;
-
-    public JwtProvider(
-            @Value("${jwt.secret}") String secret,
-            @Value("${jwt.access-token-expiration}") long accessTokenExpiration
-    ) {
-        this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
-        this.accessTokenExpiration = accessTokenExpiration;
-    }
+    private final JwtProperties jwtProperties;
 
     public String createAccessToken(Long memberId) {
+        return createToken(memberId, TokenType.ACCESS);
+    }
+
+    public String createRefreshToken(Long memberId) {
+        return createToken(memberId, TokenType.REFRESH);
+    }
+
+    private String createToken(Long memberId, TokenType type) {
         Date now = new Date();
 
         return Jwts.builder()
+                .id(UUID.randomUUID().toString())
                 .subject(String.valueOf(memberId))
+                .claim(TokenType.CLAIM_NAME, type.name())
                 .issuedAt(now)
-                .expiration(new Date(now.getTime() + accessTokenExpiration))
+                .expiration(new Date(now.getTime() + jwtProperties.expirationOf(type)))
                 .signWith(secretKey)
                 .compact();
-    }
-
-    public Long getMemberId(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-
-        return Long.valueOf(claims.getSubject());
     }
 }
